@@ -27,6 +27,12 @@ rm index.txt
 cp $1/install.sh index.txt
 chmod 644 index.txt
 
+# deploy latest addrepo shell script
+cd /var/packages/add
+rm index.txt
+cp $1/addrepo.sh index.txt
+chmod 644 index.txt
+
 # copy the packages to a temp folder, build them:
 TEMP_DIR=`mktemp -d`
 cp -r $1/packages/* $TEMP_DIR
