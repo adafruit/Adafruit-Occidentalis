@@ -1,0 +1,7 @@
+*.swp
+*.swo
+.DS_Store
+
+# generated man pages - see packages/Makefile
+usr/share/man/man1/*.gz
+usr/share/doc/occi/changelog.gz
