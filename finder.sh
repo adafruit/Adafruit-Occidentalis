@@ -28,6 +28,9 @@ function usage
   -i
      Run the Adafruit Occidentalis bootstrap (default behaviour)
 
+  -s <xxx.xxx.xxx>
+  Use a different subnet (assumes netmask 255.255.255.0) . Defaults to the same subnet as this workstation
+
   -h
     get some simple help (this message)
 
@@ -48,7 +51,7 @@ USER_NAME=pi
 COMMAND='curl -SLs https://apt.adafruit.com/install | sudo bash'
 
 printf "This script will attempt to find a Raspberry Pi on your local network, connect to it "
-while getopts htdu:p:c: opt ; do
+while getopts htdu:p:c:s: opt ; do
   case $opt in
 
   t)  COMMAND=""  # No command provides shell access
@@ -67,8 +70,9 @@ while getopts htdu:p:c: opt ; do
   c)  COMMAND="$OPTARG"
       printf ", and run the command list \"$COMMAND\"\n\n" ;;
 
-  h)  printf ", and start the bootstrap by default.\n\n"
-      usage ;;
+  s)  LOCAL="$OPTARG" ;;  # Subnet
+
+  h)  usage ;;
 
   esac
 
@@ -87,15 +91,21 @@ fi
 BOLD=`tput smso`
 NORMAL=`tput sgr0`
 
-# get the router address
-if [ "$TYPE" == "BSD" ]; then
-  ROUTER=$(netstat -r -f inet | grep ^default* | awk '{ print $2 }')
-else
-  ROUTER=$(netstat -r --inet | grep ^default* | awk '{ print $2 }')
+if [ -z "$LOCAL" ] ; then
+
+  # get the router address
+  if [ "$TYPE" == "BSD" ]; then
+    ROUTER=$(netstat -r -f inet | grep ^default* | awk '{ print $2 }')
+  else
+    ROUTER=$(netstat -r --inet | grep ^default* | awk '{ print $2 }')
+  fi
+
+  # get the first three octets of the local network
+  LOCAL=$(echo $ROUTER | awk -F. '{print $1,$2,$3}' OFS=".")
+
 fi
 
-# get the first three octets of the local network
-LOCAL=$(echo $ROUTER | awk -F. '{print $1,$2,$3}' OFS=".")
+printf "\n\nNB using a Subnet of \"$LOCAL\"\n\n"
 
 # deal with the different locations of the arp command
 arp_command() {
