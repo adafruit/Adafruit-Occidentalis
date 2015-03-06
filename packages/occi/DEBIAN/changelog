@@ -1,3 +1,9 @@
+occi (0.6.0) unstable; urgency=low
+
+  * Don't fail on absence of /boot/occidentalis.txt
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Fri, 06 Mar 2015 22:35:18 +0000
+
 occi (0.5.1) unstable; urgency=low
 
   * Adds --version flag

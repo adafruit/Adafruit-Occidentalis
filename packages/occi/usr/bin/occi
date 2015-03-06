@@ -36,7 +36,7 @@ See F</usr/share/doc/occi/occidentalis_example.txt> for a full example.
 
 =cut
 
-package OcciConfig v0.5.1;
+package OcciConfig v0.6.0;
 
 use warnings;
 use strict;
@@ -58,8 +58,8 @@ if ($show_version_and_exit) {
   exit 0;
 }
 
+have_config_or_exit($OCCI_CONFIG);
 my %config = parse_config($OCCI_CONFIG);
-have_config_or_die($OCCI_CONFIG);
 
 diag('file', $OCCI_CONFIG);
 
@@ -484,18 +484,18 @@ Print columns of diagnostic output.
   }
 }
 
-=item have_config_or_die($path)
+=item have_config_or_exit($path)
 
 Check that a given config file exists, and exit with some documentation if not.
 
 =cut
 
-sub have_config_or_die {
+sub have_config_or_exit {
   my ($file) = @_;
 
   return 1 if -f $file;
 
-  print <<"HELPTEXT";
+  print STDERR <<"HELPTEXT";
 It looks like you don't have a $OCCI_CONFIG yet.
 
 In order to create one:
@@ -509,7 +509,7 @@ And then add configuration keys like:
 See /usr/share/doc/occi/occidentalis_example.txt for a full example.
 HELPTEXT
 
-  exit 1;
+  exit 0;
 }
 
 
