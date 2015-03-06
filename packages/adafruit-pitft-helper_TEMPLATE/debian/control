@@ -10,6 +10,6 @@ Homepage: https://github.com/adafruit/Adafruit-PiTFT-Helper
 
 Package: adafruit-pitft-helper
 Architecture: armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, evtest, tslib, libts-bin
+Depends: ${shlibs:Depends}, ${misc:Depends}, evtest, tslib, libts-bin, raspberrypi-bootloader (>= 1.20150306-1) 
 Description: Configuration helper for Adafruit PiTFT
  Tools for configuring Adafruit PiTFT modules.
