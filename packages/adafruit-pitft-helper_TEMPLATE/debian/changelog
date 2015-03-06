@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.1.0-1) unstable; urgency=low
+
+  * Handles DTO configuration
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Fri, 06 Mar 2015 21:53:29 +0000
+
 adafruit-pitft-helper (0.0.1-2) unstable; urgency=low
 
   * Adds non-kernel dependencies
