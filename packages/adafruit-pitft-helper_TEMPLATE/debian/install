@@ -1,2 +1,3 @@
 adafruit-pitft-helper usr/bin
 adafruit-pitft-chroot-install usr/bin
+adafruit-pitft-touch-cal usr/bin
