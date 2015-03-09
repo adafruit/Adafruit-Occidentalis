@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.2.1-1) unstable; urgency=low
+
+  * Bump pitft kernel version
+
+ -- Todd Treece <todd@uniontownlabs.org>  Mon, 09 Mar 2015 16:44:10 +0000
+
 adafruit-pitft-helper (0.2.0-1) unstable; urgency=low
 
   * Adds wiringpi and fbi dependencies
