@@ -67,10 +67,12 @@ reprepro -V remove wheezy occi
 reprepro -V remove wheezy occidentalis
 reprepro -V remove wheezy adafruitwebide
 reprepro -V remove wheezy adafruit-pitft-helper
-reprepro -V remove wheezy libraspberrypi-dev-adafruit
-reprepro -V remove wheezy libraspberrypi-doc-adafruit
-reprepro -V remove wheezy libraspberrypi-bin-adafruit
-reprepro -V remove wheezy libraspberrypi0-adafruit
+reprepro -V remove wheezy libraspberrypi-dev
+reprepro -V remove wheezy libraspberrypi-doc
+reprepro -V remove wheezy libraspberrypi-bin
+reprepro -V remove wheezy libraspberrypi0
+reprepro -V remove wheezy raspberrypi-bootloader
+reprepro -V remove wheezy wiringpi
 
 reprepro includedeb wheezy $TEMP_DIR/build/*.deb
 
