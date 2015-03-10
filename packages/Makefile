@@ -23,8 +23,8 @@ build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb: ${occidentalis_stuff}
 	fakeroot dpkg-deb -b occidentalis build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb
 
 build/adafruit-ap_${AP_VERSION}_armhf.deb: ${ap_stuff}
-        gzip adafruit-ap/DEBIAN/changelog --best -c > adafruit-ap/usr/share/doc/adafruit-ap/changelog.gz
-        fakeroot dpkg-deb -b adafruit-ap build/adafruit-ap_${AP_VERSION}_armhf.deb
+	gzip adafruit-ap/DEBIAN/changelog --best -c > adafruit-ap/usr/share/doc/adafruit-ap/changelog.gz
+	fakeroot dpkg-deb -b adafruit-ap build/adafruit-ap_${AP_VERSION}_armhf.deb
 
 # I'm sorry
 build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb: ${pitft_stuff}

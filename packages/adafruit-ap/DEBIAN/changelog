@@ -1,5 +1,18 @@
+adafruit-ap (0.1.2-1) unstable; urgency=low
+
+  * Fix dpkg "trying to overwrite" errors
+
+ --  <pi@pitft>  Tue, 10 Mar 2015 15:53:15 +0000
+
+adafruit-ap (0.1.1-1) unstable; urgency=low
+
+  * Fix dpkg error related to hostapd binary
+
+ --  Todd Treece <todd@uniontownlabs.org>  Tue, 10 Mar 2015 15:42:29 +0000
+
 adafruit-ap (0.1.0-1) unstable; urgency=low
 
   * Initial release.
 
  -- Todd Treece <todd@uniontownlabs.org> Tue, 10 Mar 2015 15:29:42 +0000
+

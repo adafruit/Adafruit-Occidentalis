@@ -1,11 +1,28 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+# backups
+mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.orig
+mv /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.orig
+cp /etc/sysctl.conf /etc/sysctl.conf.orig
+mv /etc/default/hostapd /etc/default/hostapd.orig
+mv /usr/sbin/hostapd /usr/sbin/hostapd.orig
+cp /etc/network/interfaces /etc/network/interfaces.orig
+
+cp /etc/adafruit-ap/dhcpd.conf /etc/dhcp/dhcpd.conf
+cp /etc/adafruit-ap/isc-dhcp-server /etc/default/isc-dhcp-server
+cp /etc/adafruit-ap/hostapd /etc/default/hostapd
+cp /etc/adafruit-ap/hostapd-replacement /usr/sbin/hostapd
+cp /etc/adafruit-ap/hostapd.conf /etc/hostapd/hostapd.conf
+
+# take down wlan0
+ifdown wlan0
 
 SSID="Pi_AP"
-PASS="Raspberry"
+PASS="raspberry"
 
 get_ssid() {
 
-  read -e -p "Enter the WiFi SSID:" -i $SSID SSID
+  read -e -p "Enter the WiFi SSID: " -i $SSID SSID
 
   if [ ${#SSID} -lt 1 ] || [ ${#SSID} -gt 32 ]; then
     echo "WiFi SSID must be 1..32 characters";
@@ -16,7 +33,7 @@ get_ssid() {
 
 get_pass() {
 
-  read -e -p "Enter the WiFi Passphrase:" -i $PASS PASS
+  read -e -p "Enter the WiFi Passphrase: " -i $PASS PASS
 
   if [ ${#PASS} -lt 8 ] || [ ${#PASS} -gt 63 ]; then
     echo "WiFi Passphrase must be 8..63 characters";
@@ -45,10 +62,11 @@ iface wlan0 inet static
   netmask 255.255.255.0
 EOF
 
-echo "ssid=\"$SSID\"" >> /etc/hostapd/hostapd.conf
-echo "wpa_passphrase=\"$PASS\"" >> /etc/hostapd/hostapd.conf
+echo "ssid=$SSID" >> /etc/hostapd/hostapd.conf
+echo "wpa_passphrase=$PASS" >> /etc/hostapd/hostapd.conf
 
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+echo "1" > /proc/sys/net/ipv4/ip_forward
 
 # setup iptable forwarding
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
