@@ -1,0 +1,64 @@
+#!/bin/sh
+
+SSID="Pi_AP"
+PASS="Raspberry"
+
+get_ssid() {
+
+  read -e -p "Enter the WiFi SSID:" -i $SSID SSID
+
+  if [ ${#SSID} -lt 1 ] || [ ${#SSID} -gt 32 ]; then
+    echo "WiFi SSID must be 1..32 characters";
+    get_ssid;
+  fi
+
+}
+
+get_pass() {
+
+  read -e -p "Enter the WiFi Passphrase:" -i $PASS PASS
+
+  if [ ${#PASS} -lt 8 ] || [ ${#PASS} -gt 63 ]; then
+    echo "WiFi Passphrase must be 8..63 characters";
+    get_pass;
+  fi
+
+}
+
+get_ssid;
+get_pass;
+
+# comment out wlan0
+sed -e '/wlan0/s/^/#/' -i /etc/network/interfaces
+# comment out wpa supplicant
+sed -e '/supplicant/s/^/#/' -i /etc/network/interfaces
+
+# set static ip
+ifconfig wlan0 192.168.42.1
+
+cat << "EOF" >> /etc/network/interfaces
+
+# added by the adafruit-ap package
+allow hotplug wlan0
+iface wlan0 inet static
+  address 192.168.42.1
+  netmask 255.255.255.0
+EOF
+
+echo "ssid=\"$SSID\"" >> /etc/hostapd/hostapd.conf
+echo "wpa_passphrase=\"$PASS\"" >> /etc/hostapd/hostapd.conf
+
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
+# setup iptable forwarding
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+iptables-save > /etc/iptables.ipv4.nat
+echo "up iptables-restore < /etc/iptables.ipv4.nat" >> /etc/network/interfaces
+
+# start services and enable on boot
+service hostapd start 
+service isc-dhcp-server start
+update-rc.d hostapd enable 
+update-rc.d isc-dhcp-server enable

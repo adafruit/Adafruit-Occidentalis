@@ -1,0 +1,10 @@
+Package: adafruit-ap
+Version: 0.1.0
+Section: base
+Priority: optional
+Architecture: armhf
+Depends: hostapd, isc-dhcp-server
+Maintainer: Todd Treece <todd@uniontownlabs.org>
+Description: Adafruit Raspberry Pi Access Point
+  A package that makes it easy to setup
+  a Raspberry Pi as a WiFi access point

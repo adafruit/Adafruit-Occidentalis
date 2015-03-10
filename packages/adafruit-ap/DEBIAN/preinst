@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# backups
+mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.orig
+mv /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.orig
+cp /etc/sysctl.conf /etc/sysctl.conf.orig
+mv /etc/default/hostapd /etc/default/hostapd.orig
+mv /usr/sbin/hostapd /usr/sbin/hostapd.orig
+cp /etc/network/interfaces /etc/network/interfaces.orig
+
+# take down wlan0
+ifdown wlan0
+
+
