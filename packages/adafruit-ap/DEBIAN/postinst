@@ -6,13 +6,12 @@ mv /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.orig
 cp /etc/sysctl.conf /etc/sysctl.conf.orig
 mv /etc/default/hostapd /etc/default/hostapd.orig
 mv /usr/sbin/hostapd /usr/sbin/hostapd.orig
-cp /etc/network/interfaces /etc/network/interfaces.orig
+mv /etc/network/interfaces /etc/network/interfaces.orig
 
 cp /etc/adafruit-ap/dhcpd.conf /etc/dhcp/dhcpd.conf
 cp /etc/adafruit-ap/isc-dhcp-server /etc/default/isc-dhcp-server
 cp /etc/adafruit-ap/hostapd /etc/default/hostapd
 cp /etc/adafruit-ap/hostapd-replacement /usr/sbin/hostapd
-cp /etc/adafruit-ap/hostapd.conf /etc/hostapd/hostapd.conf
 
 # take down wlan0
 ifdown wlan0
@@ -45,27 +44,46 @@ get_pass() {
 get_ssid;
 get_pass;
 
-# comment out wlan0
-sed -e '/wlan0/s/^/#/' -i /etc/network/interfaces
-# comment out wpa supplicant
-sed -e '/supplicant/s/^/#/' -i /etc/network/interfaces
+cat <<EOF > /etc/hostapd/hostapd.conf
+interface=wlan0
+driver=rtl871xdrv
+ssid=$SSID
+hw_mode=g
+channel=6
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=$PASS
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+EOF
 
 # set static ip
 ifconfig wlan0 192.168.42.1
 
-cat << "EOF" >> /etc/network/interfaces
-
-# added by the adafruit-ap package
-allow hotplug wlan0
+cat << "EOF" > /etc/network/interfaces
+auto lo
+auto eth0
+ 
+iface lo inet loopback
+iface eth0 inet dhcp
+ 
+allow-hotplug wlan0
 iface wlan0 inet static
-  address 192.168.42.1
-  netmask 255.255.255.0
+ address 192.168.42.1
+ netmask 255.255.255.0
+ up iptables-restore < /etc/iptables.ipv4.nat
+
 EOF
 
 echo "ssid=$SSID" >> /etc/hostapd/hostapd.conf
 echo "wpa_passphrase=$PASS" >> /etc/hostapd/hostapd.conf
 
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+if ! grep -Fq "ip_forward=1" /etc/sysctl.conf; then
+  echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+fi
 echo "1" > /proc/sys/net/ipv4/ip_forward
 
 # setup iptable forwarding
