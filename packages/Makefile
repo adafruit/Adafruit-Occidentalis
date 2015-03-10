@@ -1,15 +1,17 @@
 occi_stuff = $(shell find occi)
 occidentalis_stuff = $(shell find occidentalis)
 pitft_stuff = $(shell find adafruit-pitft-helper_TEMPLATE)
+ap_stuff = $(shell find adafruit-ap)
 
 OCCIDENTALIS_VERSION := $(shell head -1 occidentalis/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 OCCI_VERSION := $(shell head -1 occi/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
+AP_VERSION := $(shell head -1 adafruit-ap/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 
 PITFT_PACKAGE_VERSION := $(shell head -1 adafruit-pitft-helper_TEMPLATE/debian/changelog | sed 's/.*(//;s/).*//;')
 # the Perl line just gets the Adafruit-PiTFT-Helper version minus the -whatever
 PITFT_VERSION := $(shell head -1 adafruit-pitft-helper_TEMPLATE/debian/changelog | perl -pe 's{ .* \( (.+) [-] \d+ \) .* }{\1}x;')
 
-all: build/occi_${OCCI_VERSION}_armhf.deb build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb
+all: build/adafruit-ap_${AP_VERSION}_armhf.deb build/occi_${OCCI_VERSION}_armhf.deb build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb
 
 build/occi_${OCCI_VERSION}_armhf.deb: ${occi_stuff}
 	gzip occi/DEBIAN/changelog --best -c > occi/usr/share/doc/occi/changelog.gz
@@ -19,6 +21,10 @@ build/occi_${OCCI_VERSION}_armhf.deb: ${occi_stuff}
 build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb: ${occidentalis_stuff}
 	gzip occidentalis/DEBIAN/changelog --best -c > occidentalis/usr/share/doc/occidentalis/changelog.gz
 	fakeroot dpkg-deb -b occidentalis build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb
+
+build/adafruit-ap_${AP_VERSION}_armhf.deb: ${ap_stuff}
+        gzip adafruit-ap/DEBIAN/changelog --best -c > adafruit-ap/usr/share/doc/adafruit-ap/changelog.gz
+        fakeroot dpkg-deb -b adafruit-ap build/adafruit-ap_${AP_VERSION}_armhf.deb
 
 # I'm sorry
 build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb: ${pitft_stuff}
