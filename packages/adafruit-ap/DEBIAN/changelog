@@ -1,3 +1,9 @@
+adafruit-ap (0.1.3-1) unstable; urgency=low
+
+  * Adds init script
+
+ --  <pi@pitft>  Tue, 10 Mar 2015 15:53:15 +0000
+
 adafruit-ap (0.1.2-1) unstable; urgency=low
 
   * Fix dpkg "trying to overwrite" errors

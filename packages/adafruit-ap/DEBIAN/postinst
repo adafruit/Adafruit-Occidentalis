@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-ifdown wlan0
+service isc-dhcp-server stop
+service hostapd stop
+
+# disable on boot
+update-rc.d -f hostapd remove
+update-rc.d -f isc-dhcp-server remove
 
 # backups
 mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.orig
@@ -9,11 +14,15 @@ cp /etc/sysctl.conf /etc/sysctl.conf.orig
 mv /etc/default/hostapd /etc/default/hostapd.orig
 mv /usr/sbin/hostapd /usr/sbin/hostapd.orig
 mv /etc/network/interfaces /etc/network/interfaces.orig
+mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.orig
+rm /etc/init.d/adafruit-ap
 
 cp /etc/adafruit-ap/dhcpd.conf /etc/dhcp/dhcpd.conf
 cp /etc/adafruit-ap/isc-dhcp-server /etc/default/isc-dhcp-server
 cp /etc/adafruit-ap/hostapd /etc/default/hostapd
 cp /etc/adafruit-ap/hostapd-replacement /usr/sbin/hostapd
+cp /etc/adafruit-ap/interfaces.ap /etc/network/interfaces
+cp /etc/adafruit-ap/adafruit-ap /etc/init.d/adafruit-ap
 
 SSID="Pi_AP"
 PASS="raspberry"
@@ -59,43 +68,4 @@ wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 EOF
 
-cat << "EOF" > /etc/network/interfaces
-auto lo
-auto eth0
- 
-iface lo inet loopback
-iface eth0 inet dhcp
- 
-allow-hotplug wlan0
-iface wlan0 inet static
- address 192.168.42.1
- netmask 255.255.255.0
-
-pre-up iptables-restore < /etc/iptables.ipv4.nat
-
-EOF
-
-if ! grep -Fq "adafruit" /etc/sysctl.conf; then
-  echo "# added by adafruit-ap" >> /etc/sysctl.conf
-  echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-fi
-sysctl -w net.ipv4.ip_forward=1
-
-ifconfig wlan0 192.168.42.1
-
-# setup iptable forwarding
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
-iptables-save > /etc/iptables.ipv4.nat
-
-# start services and enable on boot
-service isc-dhcp-server stop
-service hostapd stop 
-ifdown wlan0
-ip addr flush wlan0
-ifup wlan0
-service isc-dhcp-server start
-service hostapd start
-update-rc.d hostapd enable 
-update-rc.d isc-dhcp-server enable
+service adafruit-ap start
