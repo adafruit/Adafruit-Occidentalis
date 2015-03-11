@@ -18,11 +18,11 @@ ada_ap_off () {
   cp /etc/network/interfaces.orig /etc/network/interfaces
 
   echo 0 > /proc/sys/net/ipv4/ip_forward
-  iptables -D POSTROUTING -t nat -o eth0 -j MASQUERADE
-  iptables -D FORWARD -i eth0 -o wlan0 -j ACCEPT
-  iptables -D FORWARD -i wlan0 -o eth0 -j ACCEPT
+  iptables -t nat -D POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE 2>/dev/null
 
   ip addr flush dev wlan0
+  service networking restart
+  ifup eth0
 
 }
 
@@ -38,9 +38,7 @@ ada_ap_on () {
   cp /etc/adafruit-ap/interfaces.ap /etc/network/interfaces
 
   echo 1 > /proc/sys/net/ipv4/ip_forward
-  iptables -A POSTROUTING -t nat -o eth0 -j MASQUERADE
-  iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
-  iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+  iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
 
   service hostapd start
   service isc-dhcp-server start
