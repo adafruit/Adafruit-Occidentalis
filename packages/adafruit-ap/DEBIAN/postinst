@@ -69,3 +69,4 @@ rsn_pairwise=CCMP
 EOF
 
 service adafruit-ap start
+update-rc.d adafruit-ap defaults
