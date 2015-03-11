@@ -3,9 +3,7 @@
 .DS_Store
 
 # debs we build on the fly
-packages/build/occi_*.deb
-packages/build/occidentalis_*.deb
-packages/build/adafruit-pitft-helper_*.deb
+packages/build/*.deb
 
 # temporary directories
 packages/adafruit-pitft-helper
