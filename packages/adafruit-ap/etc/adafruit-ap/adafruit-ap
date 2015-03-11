@@ -19,11 +19,10 @@ ada_ap_off () {
 
   echo 0 > /proc/sys/net/ipv4/ip_forward
   iptables -D POSTROUTING -t nat -o eth0 -j MASQUERADE
-  iptables -D FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  iptables -D FORWARD -i eth0 -o wlan0 -j ACCEPT
   iptables -D FORWARD -i wlan0 -o eth0 -j ACCEPT
 
   ip addr flush dev wlan0
-  service networking restart
 
 }
 
@@ -40,7 +39,7 @@ ada_ap_on () {
 
   echo 1 > /proc/sys/net/ipv4/ip_forward
   iptables -A POSTROUTING -t nat -o eth0 -j MASQUERADE
-  iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
   iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
 
   service hostapd start
