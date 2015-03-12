@@ -1,11 +1,5 @@
 #!/bin/sh
 
-killall -TERM chromium 2>/dev/null;
-killall -TERM matchbox-window-manager 2>/dev/null;
-sleep 2;
-killall -9 chromium 2>/dev/null;
-killall -9 matchbox-window-manager 2>/dev/null;
-
 xset -dpms
 xset s off
 xset s noblank
