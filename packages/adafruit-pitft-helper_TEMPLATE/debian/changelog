@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.4.0-1) unstable; urgency=low
+
+  * Improve /boot/cmdline.txt handling for console option
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Thu, 12 Mar 2015 10:46:00 +0600
+
 adafruit-pitft-helper (0.3.0-1) unstable; urgency=low
 
   * Add adafruit-pitft-touch-cal for touchscreen calibration
