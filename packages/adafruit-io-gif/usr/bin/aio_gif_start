@@ -1,7 +1,11 @@
 #!/bin/sh
 
+source /etc/adafruit-io-gif/server.conf
+
+export DISPLAY
+
 xset -dpms
 xset s off
 xset s noblank
 
-matchbox-window-manager -use_titlebar no -use_cursor no & chromium --noerrdialogs --kiosk $GIF_URL --incognito
+matchbox-window-manager -use_titlebar no -use_cursor no & chromium --noerrdialogs --kiosk http://localhost:$HTTP_PORT --incognito

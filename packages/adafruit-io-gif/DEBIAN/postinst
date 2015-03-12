@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
-cat <<EOF > /etc/adafruit-io-gif/server.conf
+KEY=""
+FEED="GIF"
 
+read -e -p "Enter your adafruit.io Key: " -i $KEY KEY
+read -e -p "Enter your adafruit.io Feed Name: " -i $FEED FEED
+
+cat <<EOF > /etc/adafruit-io-gif/server.conf
+AIO_KEY=${KEY}
+AIO_FEED=${FEED}
+HTTP_PORT=8080
+DISPLAY=:0
 EOF
 
 # turn off screen blanking

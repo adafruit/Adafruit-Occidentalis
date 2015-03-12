@@ -1,4 +1,8 @@
 #!/bin/sh
 
+source /etc/adafruit-io-gif/server.conf
+
+export DISPLAY
+
 xdotool getactivewindow
 xdotool key F5

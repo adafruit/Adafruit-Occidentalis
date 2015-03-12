@@ -23,7 +23,7 @@ ada_gif_off () {
 
 ada_gif_on () {
 
-  xinit aio_gif_start
+  xinit /usr/bin/aio_gif_start
   forever start /etc/adafruit-io-gif/node_source/index.js
 
 }
