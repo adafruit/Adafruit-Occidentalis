@@ -3,7 +3,7 @@
 KEY=""
 FEED="GIF"
 
-read -e -p "Enter your adafruit.io Key: " -i $KEY KEY
+read -e -p "Enter your adafruit.io Key: " KEY
 read -e -p "Enter your adafruit.io Feed Name: " -i $FEED FEED
 
 cat <<EOF > /etc/adafruit-io-gif/server.conf
