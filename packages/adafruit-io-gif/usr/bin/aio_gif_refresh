@@ -1,0 +1,4 @@
+#!/bin/sh
+
+xdotool getactivewindow
+xdotool key F5
