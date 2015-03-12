@@ -1,6 +1,7 @@
 *.swp
 *.swo
 .DS_Store
+node_modules
 
 # debs we build on the fly
 packages/build/*.deb
