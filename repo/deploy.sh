@@ -75,6 +75,7 @@ reprepro -V remove wheezy raspberrypi-bootloader
 reprepro -V remove wheezy wiringpi
 reprepro -V remove wheezy adafruit-ap
 reprepro -V remove wheezy xinput-calibrator
+reprepro -V remove wheezy adafruit-io-gif
 
 reprepro includedeb wheezy $TEMP_DIR/build/*.deb
 
