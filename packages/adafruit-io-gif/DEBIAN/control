@@ -1,9 +1,9 @@
 Package: adafruit-io-gif
-Version: 0.2.0
+Version: 0.2.1
 Section: misc
 Priority: optional
 Architecture: armhf
-Depends: chromium, node (>= 0.12.0), matchbox, xdotool
+Depends: midori, node (>= 0.12.0), matchbox
 Maintainer: Todd Treece <todd@uniontownlabs.org>
 Description: adafruit.io gif client
   This package will attach to adafruit.io

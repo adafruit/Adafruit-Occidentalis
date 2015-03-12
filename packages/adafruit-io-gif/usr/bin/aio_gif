@@ -1,28 +1,33 @@
 #!/usr/bin/env bash
 
-if [ "$1" == "start"]; then
+source /etc/adafruit-io-gif/server.conf
 
-  forever start /etc/adafruit-io-gif/node_source/index.js
-  nohup xinit /etc/adafruit-io-gif/xinit_script &
+if [ "$1" == "start" ]; then
 
-fi
+  echo "Starting GIF server..."
 
-if [ "$1" == "stop"]; then
-
-  killall -TERM midori 2>/dev/null;
-  killall -TERM matchbox-window-manager 2>/dev/null;
-  sleep 2;
-  killall -9 midori 2>/dev/null;
-  killall -9 matchbox-window-manager 2>/dev/null;
-
-  forever stop /etc/adafruit-io-gif/node_source/index.js
+  forever start /etc/adafruit-io-gif/node_source/index.js &>/dev/null
+  sleep 5
+  nohup xinit /etc/adafruit-io-gif/xinit_script >/dev/null 2>&1 &
 
 fi
 
-if [ "$1" == "refresh"]; then
+if [ "$1" == "stop" ]; then
+
+  echo "Stopping GIF server..."
+  forever stop /etc/adafruit-io-gif/node_source/index.js &>/dev/null
+
+  killall midori 2>/dev/null;
+  killall matchbox-window-manager 2>/dev/null;
+
+fi
+
+if [ "$1" == "refresh" ]; then
 
   export DISPLAY
-  midori -e Reload
+
+  xdotool getactivewindow
+  xdotool key F5
 
 fi
 
