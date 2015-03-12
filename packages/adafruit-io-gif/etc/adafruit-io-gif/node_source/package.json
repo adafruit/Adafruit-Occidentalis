@@ -1,0 +1,18 @@
+{
+  "name": "gif_viewer",
+  "version": "1.0.0",
+  "description": "adafruit io gif viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "adafruit"
+  ],
+  "author": "Todd Treece <todd@uniontownlabs.org>",
+  "license": "MIT",
+  "dependencies": {
+    "aio_gif": "^1.0.1",
+    "dotenv": "^0.5.1"
+  }
+}
