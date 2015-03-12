@@ -2,10 +2,12 @@ occi_stuff = $(shell find occi)
 occidentalis_stuff = $(shell find occidentalis)
 pitft_stuff = $(shell find adafruit-pitft-helper_TEMPLATE)
 ap_stuff = $(shell find adafruit-ap)
+gif_stuff = $(shell find adafruit-io-gif)
 
 OCCIDENTALIS_VERSION := $(shell head -1 occidentalis/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 OCCI_VERSION := $(shell head -1 occi/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 AP_VERSION := $(shell head -1 adafruit-ap/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
+GIF_VERSION := $(shell head -1 adafruit-io-gif/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 
 PITFT_PACKAGE_VERSION := $(shell head -1 adafruit-pitft-helper_TEMPLATE/debian/changelog | sed 's/.*(//;s/).*//;')
 # the Perl line just gets the Adafruit-PiTFT-Helper version minus the -whatever
@@ -25,6 +27,10 @@ build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb: ${occidentalis_stuff}
 build/adafruit-ap_${AP_VERSION}_armhf.deb: ${ap_stuff}
 	gzip adafruit-ap/DEBIAN/changelog --best -c > adafruit-ap/usr/share/doc/adafruit-ap/changelog.gz
 	fakeroot dpkg-deb -b adafruit-ap build/adafruit-ap_${AP_VERSION}_armhf.deb
+
+build/adafruit-io-gif_${GIF_VERSION}_armhf.deb: ${gif_stuff}
+	gzip adafruit-io-gif/DEBIAN/changelog --best -c > adafruit-io-gif/usr/share/doc/adafruit-io-gif/changelog.gz
+	fakeroot dpkg-deb -b adafruit-io-gif build/adafruit-io-gif_${GIF_VERSION}_armhf.deb
 
 # I'm sorry
 build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb: ${pitft_stuff}
