@@ -13,7 +13,7 @@ dotenv._setEnvs();
 var server = gif({
   key: process.env.AIO_KEY.trim(),
   feed: process.env.AIO_FEED.trim(),
-  port: program.env.HTTP_PORT
+  port: process.env.HTTP_PORT
 });
 
 console.log('Starting HTTP server on http://localhost:%d', process.env.HTTP_PORT);
@@ -21,5 +21,5 @@ console.log('Starting HTTP server on http://localhost:%d', process.env.HTTP_PORT
 server.on('error', console.error.bind(this, 'GIF Server Error'));
 
 server.on('image', function() {
-  spawn('/usr/bin/aio_gif_refresh');
+  spawn('/usr/bin/aio_gif', ['refresh']);
 });

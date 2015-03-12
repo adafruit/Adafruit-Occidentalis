@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "start"]; then
+
+  forever start /etc/adafruit-io-gif/node_source/index.js
+  nohup xinit /etc/adafruit-io-gif/xinit_script &
+
+fi
+
+if [ "$1" == "stop"]; then
+
+  killall -TERM midori 2>/dev/null;
+  killall -TERM matchbox-window-manager 2>/dev/null;
+  sleep 2;
+  killall -9 midori 2>/dev/null;
+  killall -9 matchbox-window-manager 2>/dev/null;
+
+  forever stop /etc/adafruit-io-gif/node_source/index.js
+
+fi
+
+if [ "$1" == "refresh"]; then
+
+  export DISPLAY
+  midori -e Reload
+
+fi
+

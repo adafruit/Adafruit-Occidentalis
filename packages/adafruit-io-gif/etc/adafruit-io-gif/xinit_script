@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+source /etc/adafruit-io-gif/server.conf
+
+export DISPLAY
+
+xset -dpms
+xset s off
+xset s noblank
+
+matchbox-window-manager -use_titlebar no -use_cursor no & midori -e Fullscreen -a http://localhost:$HTTP_PORT

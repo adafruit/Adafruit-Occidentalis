@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-KEY=""
 FEED="GIF"
 
 read -e -p "Enter your adafruit.io Key: " KEY
@@ -12,6 +11,12 @@ AIO_FEED=${FEED}
 HTTP_PORT=8080
 DISPLAY=:0
 EOF
+
+# up gpu memory
+sed -i /boot/config.txt -e "/^gpu_mem=/c gpu_mem=256"
+if ! grep -Fq "gpu_mem" /boot/config.txt; then
+  echo "gpu_mem=256" >> /boot/config.txt
+fi
 
 # turn off screen blanking
 cp -n /etc/kbd/config{,.orig}
@@ -42,4 +47,4 @@ cd /etc/adafruit-io-gif/node_source
 npm install
 npm install -g forever
 
-echo "to start the server: sudo service adafruit-io-gif start"
+echo "GPU MEMORY UPDATED TO 256. REBOOT REQUIRED"
