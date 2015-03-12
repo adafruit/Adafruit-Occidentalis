@@ -1,3 +1,10 @@
+adafruit-pitft-helper (0.4.1-1) unstable; urgency=low
+
+  * Fixes handling of -t 22
+  * Tweaks helptext
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Thu, 12 Mar 2015 13:35:34 -0600
+
 adafruit-pitft-helper (0.4.0-1) unstable; urgency=low
 
   * Improve /boot/cmdline.txt handling for console option
