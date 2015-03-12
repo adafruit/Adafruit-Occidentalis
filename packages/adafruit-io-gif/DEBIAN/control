@@ -1,0 +1,12 @@
+Package: adafruit-io-gif
+Version: 0.1.0
+Section: misc
+Priority: optional
+Architecture: armhf
+Depends: chromium, node (>= 0.12.0), matchbox, xdotool
+Maintainer: Todd Treece <todd@uniontownlabs.org>
+Description: adafruit.io gif client
+  This package will attach to adafruit.io
+  and display full screen animated gifs
+  pushed from an adafruit.io feed on a
+  display of your choosing.
