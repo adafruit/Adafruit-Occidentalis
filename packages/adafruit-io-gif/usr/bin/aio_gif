@@ -1,14 +1,27 @@
 #!/usr/bin/env bash
 
-source /etc/adafruit-io-gif/server.conf
-
 if [ "$1" == "start" ]; then
 
   echo "Starting GIF server..."
 
   forever start /etc/adafruit-io-gif/node_source/index.js &>/dev/null
   sleep 5
-  nohup xinit /etc/adafruit-io-gif/xinit_script >/dev/null 2>&1 &
+
+  X=$( pidof X )
+  if [ ${#X} -gt 0 ]; then
+
+    if [ -n "$DISPLAY" ]; then
+      source /etc/adafruit-io-gif/server.conf
+      export DISPLAY
+    else
+      source /etc/adafruit-io-gif/server.conf
+    fi
+
+    nohup midori -e Fullscreen -a http://localhost:$HTTP_PORT >/dev/null 2>&1 &
+
+  else
+    nohup xinit /etc/adafruit-io-gif/xinit_script >/dev/null 2>&1 &
+  fi
 
 fi
 
@@ -24,10 +37,10 @@ fi
 
 if [ "$1" == "refresh" ]; then
 
+  source /etc/adafruit-io-gif/server.conf
   export DISPLAY
 
   xdotool getactivewindow
   xdotool key F5
 
 fi
-

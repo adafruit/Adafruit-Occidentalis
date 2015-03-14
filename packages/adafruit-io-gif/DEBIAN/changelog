@@ -1,3 +1,9 @@
+adafruit-io-gif (0.2.3) unstable; urgency=low
+
+  * Support existing X session
+
+ -- Todd Treece <todd@uniontownlabs.org> Tue, 10 Mar 2015 21:29:42 +0000
+
 adafruit-io-gif (0.2.2) unstable; urgency=low
 
   * Adds xdotool dependency
