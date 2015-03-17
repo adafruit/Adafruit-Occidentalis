@@ -16,7 +16,7 @@
   "author": "Todd Treece <todd@uniontownlabs.org>",
   "license": "MIT",
   "dependencies": {
-    "aio_gif": "^1.1.0",
+    "aio_gif": "^1.1.1",
     "dotenv": "^0.5.1"
   }
 }
