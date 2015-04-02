@@ -28,6 +28,12 @@ function usage
   -i
      Run the Adafruit Occidentalis bootstrap (default behaviour)
 
+  -s <xxx.xxx.xxx>
+  Use a different subnet (assumes netmask 255.255.255.0) . Defaults to the same subnet as this workstation
+
+  -o  <opt string>
+    Provide a single string to be passed to ssh as parameters  e.g. -o "-X -i ~/.ssh/pikey"
+
   -h
     get some simple help (this message)
 
@@ -48,33 +54,39 @@ USER_NAME=pi
 COMMAND='curl -SLs https://apt.adafruit.com/install | sudo bash'
 
 printf "This script will attempt to find a Raspberry Pi on your local network, connect to it "
-while getopts htdu:p:c: opt ; do
+while getopts htdu:p:c:s:o: opt ; do
   case $opt in
 
   t)  COMMAND=""  # No command provides shell access
-      printf ", and provide a shell prompt.\n\n" ;;
+      printf ",\nprovide a shell prompt" ;;
 
   d)  COMMAND=$'printf "\nHostname: %s\nUptime: %s\n\n%s\n" $(hostname) "$(uptime)" "$(/sbin/ifconfig)"'
-      printf ", and display uptime and network information\n\n" ;;
+      printf ",\nand display uptime and network information" ;;
 
   i)  COMMAND='curl -SLs https://apt.adafruit.com/install | sudo bash'
-      printf ", and start the bootstrap.\n\n" ;;
+      printf ",\nand start the Adafruit bootstrap." ;;
 
   u)  USER_NAME=$OPTARG ;;
 
-  p)  SSH_PORT=$OPTARG ;;
+  p)  SSH_PORT=$OPTARG
+      printf ",\nuse the ssh port \"$SSH_PORT\"" ;;
 
   c)  COMMAND="$OPTARG"
-      printf ", and run the command list \"$COMMAND\"\n\n" ;;
+      printf ",\nand run the command list \"$COMMAND\"" ;;
 
-  h)  printf ", and start the bootstrap by default.\n\n"
-      usage ;;
+  o)  SSH_OPTS="$OPTARG"
+      printf ",\nssh will use options \"$SSH_OPTS\"\n\n" ;;
+
+  s)  LOCAL="$OPTARG" ;;  # Subnet
+
+  h)  usage ;;
 
   esac
 
 done
 
-printf "Username is \"$USER_NAME\"\n\n"
+printf ",\nUsername is \"$USER_NAME\""
+
 
 # check if we are using the GNU version of the utils
 if date --version >/dev/null 2>&1; then
@@ -87,15 +99,21 @@ fi
 BOLD=`tput smso`
 NORMAL=`tput sgr0`
 
-# get the router address
-if [ "$TYPE" == "BSD" ]; then
-  ROUTER=$(netstat -r -f inet | grep ^default* | awk '{ print $2 }')
-else
-  ROUTER=$(netstat -r --inet | grep ^default* | awk '{ print $2 }')
+if [ -z "$LOCAL" ] ; then
+
+  # get the router address
+  if [ "$TYPE" == "BSD" ]; then
+    ROUTER=$(netstat -r -f inet | awk '/^default/ { print $2 }')
+  else
+    ROUTER=$(netstat -r --inet | awk '/^default/ { print $2 }')
+  fi
+
+  # get the first three octets of the local network
+  LOCAL=$(echo $ROUTER | awk -F. '{print $1,$2,$3}' OFS=".")
+
 fi
 
-# get the first three octets of the local network
-LOCAL=$(echo $ROUTER | awk -F. '{print $1,$2,$3}' OFS=".")
+printf "\n\nNB using a Subnet of \"$LOCAL\"\n\n"
 
 # deal with the different locations of the arp command
 arp_command() {
@@ -167,4 +185,4 @@ if [ $HAS_SSH -eq 0 ]; then
   exit 1
 fi
 
-ssh -t -p $SSH_PORT $USER_NAME@$IP  "$COMMAND"
+ssh -t -p $SSH_PORT $USER_NAME@$IP $SSH_OPTS  "$COMMAND"
