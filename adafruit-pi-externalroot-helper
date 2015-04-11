@@ -20,25 +20,18 @@ function print_help() {
 function bail() {
     FG="1;31m"
     BG="40m"
-    echo -en "[\033[${FG}\033[${BG}${group}\033[0m] "
-    if [ -z "$1" ]; then
-        echo "Exiting due to error"
-    else
-        echo "Exiting due to error: $*"
-    fi
+    echo -en "[\033[${FG}\033[${BG}error\033[0m] "
+    echo "$*"
     exit 1
 }
 
 function info() {
-    system="$1"
-    group="${system}"
+    task="$1"
     shift
     FG="1;32m"
     BG="40m"
-    echo -e "[\033[${FG}\033[${BG}${system}\033[0m] $*"
+    echo -e "[\033[${FG}\033[${BG}${task}\033[0m] $*"
 }
-
-group=ADAFRUIT
 
 if [[ $EUID -ne 0 ]]; then
     bail "adafruit-pi-externalroot-helper must be run as root. try: sudo adafruit-pi-externalroot-helper"
@@ -71,7 +64,7 @@ if [[ ! -e "$target_drive" ]]; then
     bail "Target drive ${target_drive} must be an existing device (use -d /dev/foo to specify)"
 fi
 
-info "externalroot" "Creating new ext4 filesystem on ${target_drive}"
+info "fs prep" "Creating new ext4 filesystem on ${target_drive}"
 
 # Create a new partition:
 fdisk "$target_drive" <<EOF
@@ -98,20 +91,23 @@ mkfs -t ext4 -L rootfs "${target_partition}"
 # Get UUID for target filesystem:
 target_filesystem_uuid=`tune2fs -l ${target_partition} | grep 'Filesystem UUID' | awk '{print $3}'`
 
-info "externalroot" "Mounting ${target_partition}"
+info "fs copy" "Mounting ${target_partition}"
 mount "${target_partition}" /mnt
 
-info "externalroot" "Copying root filesystem to ${target_partition}"
+info "fs copy" "Copying root filesystem to ${target_partition}"
 rsync -ax --progress / /mnt
 
-info "externalroot" "Configuring boot from {$target_partition}"
+info "boot config" "Configuring boot from {$target_partition}"
 cp /boot/cmdline.txt /boot/cmdline.txt.bak
-sed -i "s|root=\/dev\/mmcblk0p2|root=${target_partition_uuid}|" /boot/cmdline.txt
-echo "/dev/disk/by-uuid/${target_filesystem_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
-# Comment out old root partition in fstab:
+sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
+
+# Comment out old root partition in fstab, add new one:
 sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
+echo "/dev/disk/by-uuid/${target_filesystem_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
 
-echo "ok, check on the state of things"
-
-# info "externalroot" "Unmounting ${target_drive}"
-# umount "$target_drive"
+info "boot config" "Ok, your system should be ready. You may wish to check:"
+info "boot config" "  /mnt/etc/fstab"
+info "boot config" "  /boot/cmdline.txt"
+info "boot config" "Your new root drive is currently accessible under /mnt."
+info "boot config" "In order to restart with this drive at /, please type:"
+info "boot config" "sudo reboot"
