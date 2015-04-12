@@ -74,19 +74,11 @@ then
     exit
 fi
 
-# Create a new partition:
-fdisk "$target_drive" <<EOF
-d
-n
-p
-1
-
-
-w
-
-EOF
-
 export target_partition="${target_drive}1"
+
+info "fs create" "Creating ${target_partition}"
+    parted --script "${target_drive}" mklabel gpt
+    parted --script --align optimal "${target_drive}" mkpart primary ext4 0% 100%
 
 info "fs create" "Creating ext4 filesystem on ${target_partition}"
     mkfs -t ext4 -L rootfs "${target_partition}"
@@ -109,7 +101,7 @@ info "fs copy" "Copying root filesystem to ${target_partition}"
 
 info "boot config" "Configuring boot from {$target_partition}"
     cp /boot/cmdline.txt /boot/cmdline.txt.bak
-    sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
+    sed -i "s|root=\/dev\/mmcblk0p2|root=UUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
 
 info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
     sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
