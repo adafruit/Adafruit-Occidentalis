@@ -64,7 +64,15 @@ if [[ ! -e "$target_drive" ]]; then
     bail "Target drive ${target_drive} must be an existing device (use -d /dev/foo to specify)"
 fi
 
-info "fs prep" "Creating new ext4 filesystem on ${target_drive}"
+info "start" "Will create new ext4 filesystem on ${target_drive}"
+info "start" "If there is data on ${target_drive}, it will be lost."
+read -p "Really proceed? " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    echo "Quitting."
+    exit
+fi
 
 # Create a new partition:
 fdisk "$target_drive" <<EOF
@@ -80,30 +88,33 @@ EOF
 
 export target_partition="${target_drive}1"
 
-# Get UUID for target partition:
-eval `blkid -o export "${target_partition}"`
-target_partition_uuid=$UUID
-echo "Target partition GUID: ${target_partition_uuid}"
+info "fs create" "Creating ext4 filesystem on ${target_partition}"
+    mkfs -t ext4 -L rootfs "${target_partition}"
 
-# Create an actual filesystem:
-mkfs -t ext4 -L rootfs "${target_partition}"
+info "fs id" "Getting UUID for target partition"
+    eval `blkid -o export "${target_partition}"`
+    export target_partition_uuid=$UUID
 
-# Get UUID for target filesystem:
-target_filesystem_uuid=`tune2fs -l ${target_partition} | grep 'Filesystem UUID' | awk '{print $3}'`
+info "fs id" "Getting UUID for target filesystem"
+    export target_filesystem_uuid=`tune2fs -l ${target_partition} | grep 'Filesystem UUID' | awk '{print $3}'`
 
-info "fs copy" "Mounting ${target_partition}"
-mount "${target_partition}" /mnt
+info "fs id" "Target partition UUID: ${target_partition_uuid}"
+info "fs id" "Target filesystem UUID: ${target_filesystem_uuid}"
+
+info "fs copy" "Mounting ${target_partition} on /mnt"
+    mount "${target_partition}" /mnt
 
 info "fs copy" "Copying root filesystem to ${target_partition}"
-rsync -ax --progress / /mnt
+    rsync -ax / /mnt
 
 info "boot config" "Configuring boot from {$target_partition}"
-cp /boot/cmdline.txt /boot/cmdline.txt.bak
-sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
+    cp /boot/cmdline.txt /boot/cmdline.txt.bak
+    sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
 
-# Comment out old root partition in fstab, add new one:
-sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
-echo "/dev/disk/by-uuid/${target_filesystem_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
+info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
+    sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
+    echo "/dev/disk/by-uuid/${target_filesystem_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
+    cat /etc/fstab
 
 info "boot config" "Ok, your system should be ready. You may wish to check:"
 info "boot config" "  /mnt/etc/fstab"
