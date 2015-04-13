@@ -87,8 +87,8 @@ fi
 
 export target_partition="${target_drive}1"
 
-info "dependencies" "Installing gdisk, rsync, and pv."
-    # Both of these are probably installed, but let's make sure.
+info "dependencies" "Installing gdisk, rsync, and parted."
+    # All except gdisk are probably installed, but let's make sure.
     apt-get install gdisk rsync parted
 
 info "fs create" "Creating ${target_partition}"
