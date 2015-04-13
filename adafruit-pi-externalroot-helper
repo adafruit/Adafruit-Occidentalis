@@ -34,7 +34,7 @@ function info() {
 }
 
 if [[ $EUID -ne 0 ]]; then
-    bail "adafruit-pi-externalroot-helper must be run as root. try: sudo adafruit-pi-externalroot-helper"
+    bail "must be run as root. try: sudo adafruit-pi-externalroot-helper"
 fi
 
 args=$(getopt -uo 'hvd:' -- $*)
@@ -74,6 +74,9 @@ then
     exit
 fi
 
+info "dependencies" "Installing gdisk, rsync, and pv."
+    apt-get install gdisk rsync pv
+
 export target_partition="${target_drive}1"
 
 info "fs create" "Creating ${target_partition}"
@@ -87,11 +90,11 @@ info "fs id" "Getting UUID for target partition"
     eval `blkid -o export "${target_partition}"`
     export target_partition_uuid=$UUID
 
-info "fs id" "Getting UUID for target filesystem"
-    export target_filesystem_uuid=`tune2fs -l ${target_partition} | grep 'Filesystem UUID' | awk '{print $3}'`
+info "fs id" "Getting Partition unique GUID for target filesystem"
+    export partition_unique_guid=`echo 'i' | sudo gdisk /dev/sda | grep 'Partition unique GUID:' | awk '{print $4}'`
 
 info "fs id" "Target partition UUID: ${target_partition_uuid}"
-info "fs id" "Target filesystem UUID: ${target_filesystem_uuid}"
+info "fs id" "Partition unique GUID: ${partition_unique_guid}"
 
 info "fs copy" "Mounting ${target_partition} on /mnt"
     mount "${target_partition}" /mnt
@@ -101,11 +104,11 @@ info "fs copy" "Copying root filesystem to ${target_partition}"
 
 info "boot config" "Configuring boot from {$target_partition}"
     cp /boot/cmdline.txt /boot/cmdline.txt.bak
-    sed -i "s|root=\/dev\/mmcblk0p2|root=UUID=${target_partition_uuid} rootdelay=5|" /boot/cmdline.txt
+    sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${partition_unique_guid} rootdelay=5|" /boot/cmdline.txt
 
 info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
     sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
-    echo "/dev/disk/by-uuid/${target_filesystem_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
+    echo "/dev/disk/by-uuid/${target_partition_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
     cat /etc/fstab
 
 info "boot config" "Ok, your system should be ready. You may wish to check:"
