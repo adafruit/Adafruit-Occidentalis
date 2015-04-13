@@ -1,0 +1,5 @@
+adafruit-pi-externalroot-helper (0.0.1-1) unstable; urgency=low
+
+  * First pass at helper script.
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Sun, 12 Apr 2015 12:36:01 -0600
