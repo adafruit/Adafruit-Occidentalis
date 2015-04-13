@@ -1,13 +1,15 @@
-adafruit-pi-externalroot-helper
+Adafruit-Pi-ExternalRoot-helper
 ===============================
 
 A shell script for configuring an external USB drive as root filesystem
-on a Raspberry Pi running Raspbian.
+on a Raspberry Pi running Raspbian.  It's a companion to [Using an
+External Drive as a Raspberry Pi Root Filesystem][tutorial], which you
+should read first.
 
-Adafruit Learning System guide coming soon.
+Using adafruit-pi-externalroot-helper
+-------------------------------------
 
-usage
------
+First, read the [tutorial][tutorial].
 
 On a Raspberry Pi running Raspbian, with a USB-connected storage device you
 wish to use for your root filesystem:
@@ -18,12 +20,12 @@ wish to use for your root filesystem:
 
 ...where `/dev/sda` is the external USB you wish to use for a root filesystem.
 
-credit where due and further reading
-------------------------------------
+Sources and Further Reading
+---------------------------
 
-This is mostly an implementation of the process outlined in paulv's
-[HOWTO: Move the filesystem to a USB stick][1] on the Raspberry Pi
-forums, with additional help from the following sources:
+This script is mostly an implementation of the process outlined in paulv's
+[HOWTO: Move the filesystem to a USB stick][1] on the Raspberry Pi forums, with
+additional help from the following sources:
 
 - The Arch Linux wiki, [GUID Partition Table][2] for what a GPT is and
   some `parted` commands.
@@ -49,3 +51,4 @@ Along with manual / info pages for:
 [5]: https://samhobbs.co.uk/2013/10/speed-up-your-pi-by-booting-to-a-usb-flash-drive
 [wp]: https://en.wikipedia.org/wiki/GUID_Partition_Table
 [6]: https://github.com/torvalds/linux/blob/10975933da3d65f8833d4ce98dcc2ecc63a695d6/init/do_mounts.c#L183
+[tutorial]: https://learn.adafruit.com/external-drive-as-raspberry-pi-root

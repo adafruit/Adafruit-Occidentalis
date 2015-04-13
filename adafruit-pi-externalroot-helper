@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# adafruit-pi-externalroot-helper
+# 
+# Configure a Raspbian system to use an external USB drive as root filesystem.
+#
+# See README.md for details and sources.
+
 set -e
 
 function print_version() {
@@ -13,10 +19,13 @@ function print_help() {
     echo "    -v            Print version information"
     echo "    -d [device]   Specify path of device to convert to root"
     echo
-    echo "You must specify a device."
+    echo "You must specify a device. See:"
+    echo "https://learn.adafruit.com/external-drive-as-raspberry-pi-root"
     exit 1
 }
 
+
+# Display an error message and quit:
 function bail() {
     FG="1;31m"
     BG="40m"
@@ -25,6 +34,7 @@ function bail() {
     exit 1
 }
 
+# Display an info message:
 function info() {
     task="$1"
     shift
@@ -37,6 +47,7 @@ if [[ $EUID -ne 0 ]]; then
     bail "must be run as root. try: sudo adafruit-pi-externalroot-helper"
 fi
 
+# Handle arguments:
 args=$(getopt -uo 'hvd:' -- $*)
 [ $? != 0 ] && print_help
 set -- $args
@@ -61,7 +72,7 @@ do
 done
 
 if [[ ! -e "$target_drive" ]]; then
-    bail "Target drive ${target_drive} must be an existing device (use -d /dev/foo to specify)"
+    bail "Target ${target_drive} must be existing device (use -d /dev/foo to specify)"
 fi
 
 info "start" "Will create new ext4 filesystem on ${target_drive}"
@@ -74,12 +85,21 @@ then
     exit
 fi
 
-info "dependencies" "Installing gdisk, rsync, and pv."
-    apt-get install gdisk rsync pv
-
 export target_partition="${target_drive}1"
 
+info "dependencies" "Installing gdisk, rsync, and pv."
+    # Both of these are probably installed, but let's make sure.
+    apt-get install gdisk rsync parted
+
 info "fs create" "Creating ${target_partition}"
+    # The alternative here seems to be to pipe a series of commands
+    # to fdisk(1), similar to how it's done by raspi-config:
+    # https://github.com/asb/raspi-config/blob/3a5d75340a1f9fe5d7eebfb28fee0e24033f4fd3/raspi-config#L68
+    # This seemed to work, but I was running into weirdness because
+    # that doesn't seem to make a GPT, and later on I couldn't get
+    # partition unique GUID from gdisk.  parted(1) is also a nice
+    # option because it's scriptable and allows partition sizes to
+    # be specified in percentages.
     parted --script "${target_drive}" mklabel gpt
     parted --script --align optimal "${target_drive}" mkpart primary ext4 0% 100%
 
@@ -91,6 +111,12 @@ info "fs id" "Getting UUID for target partition"
     export target_partition_uuid=$UUID
 
 info "fs id" "Getting Partition unique GUID for target filesystem"
+    # Ok, so the only way I was able to get this was using gdisk.
+    # I don't quite understand the different between this value and
+    # the one you can get with blkid and tune2fs (which seem to give
+    # the same thing).  Nevertheless, this seems to be necessary to
+    # get a value that can be used in cmdline.txt.  I think it's a
+    # GUID specifically for the GPT partition table entry.
     export partition_unique_guid=`echo 'i' | sudo gdisk /dev/sda | grep 'Partition unique GUID:' | awk '{print $4}'`
 
 info "fs id" "Target partition UUID: ${target_partition_uuid}"
@@ -99,17 +125,21 @@ info "fs id" "Partition unique GUID: ${partition_unique_guid}"
 info "fs copy" "Mounting ${target_partition} on /mnt"
     mount "${target_partition}" /mnt
 
-info "fs copy" "Copying root filesystem to ${target_partition}"
+info "fs copy" "Copying root filesystem to ${target_partition} with rsync"
+info "fs copy" "This will take quite a while.  Please be patient!"
     rsync -ax / /mnt
 
 info "boot config" "Configuring boot from {$target_partition}"
+    # rootdelay=5 is likely not necessary here, but seems to do no harm.
     cp /boot/cmdline.txt /boot/cmdline.txt.bak
     sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${partition_unique_guid} rootdelay=5|" /boot/cmdline.txt
 
 info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
+    # These changes are made on the new drive after copying so that they
+    # don't have to be undone in order to switch back to booting from the
+    # SD card.
     sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
     echo "/dev/disk/by-uuid/${target_partition_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
-    cat /etc/fstab
 
 info "boot config" "Ok, your system should be ready. You may wish to check:"
 info "boot config" "  /mnt/etc/fstab"
