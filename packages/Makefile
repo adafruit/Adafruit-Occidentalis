@@ -1,11 +1,13 @@
 occi_stuff = $(shell find occi)
 occidentalis_stuff = $(shell find occidentalis)
 pitft_stuff = $(shell find adafruit-pitft-helper_TEMPLATE)
+externalroot_stuff = $(shell find adafruit-pi-externalroot-helper)
 ap_stuff = $(shell find adafruit-ap)
 gif_stuff = $(shell find adafruit-io-gif)
 
 OCCIDENTALIS_VERSION := $(shell head -1 occidentalis/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 OCCI_VERSION := $(shell head -1 occi/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
+EXTERNALROOT_VERSION := $(shell head -1 adafruit-pi-externalroot-helper/debian/changelog | sed 's/.*(//;s/).*//;')
 AP_VERSION := $(shell head -1 adafruit-ap/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 GIF_VERSION := $(shell head -1 adafruit-io-gif/DEBIAN/changelog | sed 's/.*(//;s/).*//;')
 
@@ -13,7 +15,7 @@ PITFT_PACKAGE_VERSION := $(shell head -1 adafruit-pitft-helper_TEMPLATE/debian/c
 # the Perl line just gets the Adafruit-PiTFT-Helper version minus the -whatever
 PITFT_VERSION := $(shell head -1 adafruit-pitft-helper_TEMPLATE/debian/changelog | perl -pe 's{ .* \( (.+) [-] \d+ \) .* }{\1}x;')
 
-all: build/adafruit-ap_${AP_VERSION}_armhf.deb build/occi_${OCCI_VERSION}_armhf.deb build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb build/adafruit-io-gif_${GIF_VERSION}_armhf.deb
+all: build/adafruit-ap_${AP_VERSION}_armhf.deb build/occi_${OCCI_VERSION}_armhf.deb build/occidentalis_${OCCIDENTALIS_VERSION}_armhf.deb build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb build/adafruit-io-gif_${GIF_VERSION}_armhf.deb build/adafruit-pi-externalroot-helper_${EXTERNALROOT_VERSION}_armhf.deb
 
 build/occi_${OCCI_VERSION}_armhf.deb: ${occi_stuff}
 	gzip occi/DEBIAN/changelog --best -c > occi/usr/share/doc/occi/changelog.gz
@@ -44,6 +46,15 @@ build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb: ${pitft_stuff}
 	cd adafruit-pitft-helper/adafruit-pitft-helper_${PITFT_VERSION} && debuild -b -aarmhf -uc -us
 	mv ./adafruit-pitft-helper/*.deb build/
 	rm -r adafruit-pitft-helper
+
+build/adafruit-pi-externalroot-helper_${EXTERNALROOT_VERSION}_armhf.deb: ${externalroot_stuff}
+	mkdir -p erbuild
+	rm -r erbuild
+	mkdir erbuild
+	cp -r adafruit-pi-externalroot-helper erbuild/adafruit-pi-externalroot-helper_${EXTERNALROOT_VERSION}
+	cd erbuild/adafruit-pi-externalroot-helper_${EXTERNALROOT_VERSION} && debuild -b -aarmhf -uc -us
+	mv ./erbuild/*.deb build/
+	rm -r erbuild
 
 clean:
 	$(RM) build/*
