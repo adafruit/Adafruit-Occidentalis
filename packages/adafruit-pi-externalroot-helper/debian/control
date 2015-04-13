@@ -1,0 +1,14 @@
+Source: adafruit-pi-externalroot-helper
+Section: utils
+Priority: extra
+Maintainer: Brennen Bearnes <bbearnes@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: https://github.com/adafruit/Adafruit-Pi-ExternaRoot-Helper
+# Vcs-Git: https://github.com/adafruit/Adafruit-Pi-ExternalRoot-Helper.git
+# Vcs-Browser: https://github.com/adafruit/Adafruit-Pi-ExternalRoot-Helper
+
+Package: adafruit-pi-externalroot-helper
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, rsync, parted, gdisk
+Description: Configuration helper for using an external drive as root FS
