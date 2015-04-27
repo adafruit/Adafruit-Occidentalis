@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.5.1-1) unstable; urgency=medium
+
+  * Fixes ~/.profile handling
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Mon, 27 Apr 2015 14:08:30 -0600
+
 adafruit-pitft-helper (0.5.0-1) unstable; urgency=medium
 
   * Adds -u dirname option
