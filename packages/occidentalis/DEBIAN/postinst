@@ -29,7 +29,7 @@ if ! grep -Fq "pihome" /etc/samba/smb.conf; then
   cp /etc/samba/smb.conf /etc/samba/smb.conf.backup
   sed -i "s/.*workgroup[[:space:]]=.*/workgroup = WORKGROUP/" /etc/samba/smb.conf
   sed -i "s/.*wins[[:space:]]support[[:space:]]=.*/wins support = yes/" /etc/samba/smb.conf
-  echo -ne "raspberry\n" | tee - | smbpasswd -a -s pi
+  echo "raspberry" | tee - | smbpasswd -a -s pi
   cat << "EOF" >> /etc/samba/smb.conf
   [pihome]
      comment= Pi Home
