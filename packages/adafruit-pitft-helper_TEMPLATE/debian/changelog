@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.7.0-1) unstable; urgency=medium
+
+  * Removes explicity kernel package dependency.
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Mon, 01 Jun 2015 16:47:00 -0600
+
 adafruit-pitft-helper (0.6.0-1) unstable; urgency=medium
 
   * Switches kernel dependency to Adafruit package.
