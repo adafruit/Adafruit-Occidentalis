@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.7.1-1) unstable; urgency=low
+
+  * Makes helper and chroot wrapper a touch more user-friendly.
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Tue, 02 Jun 2015 14:58:21 -0600
+
 adafruit-pitft-helper (0.7.0-1) unstable; urgency=medium
 
   * Removes explicity kernel package dependency.
