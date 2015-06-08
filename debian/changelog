@@ -1,3 +1,9 @@
+adafruit-pi-externalroot-helper (0.1.0-1) unstable; urgency=medium
+
+  * Fix hardcoded target drive in gdisk call.
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Mon, 08 Jun 2015 16:19:01 -0600
+
 adafruit-pi-externalroot-helper (0.0.1-1) unstable; urgency=low
 
   * First pass at helper script.

@@ -9,7 +9,7 @@
 set -e
 
 function print_version() {
-    echo "Adafruit Pi External Root Helper v0.0.1"
+    echo "Adafruit Pi External Root Helper v0.1.0"
     exit 1
 }
 
