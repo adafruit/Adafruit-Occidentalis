@@ -9,7 +9,7 @@
 set -e
 
 function print_version() {
-    echo "Adafruit Pi External Root Helper v0.0.1"
+    echo "Adafruit Pi External Root Helper v0.1.0"
     exit 1
 }
 
@@ -87,8 +87,8 @@ fi
 
 export target_partition="${target_drive}1"
 
-info "dependencies" "Installing gdisk, rsync, and pv."
-    # Both of these are probably installed, but let's make sure.
+info "dependencies" "Installing gdisk, rsync, and parted."
+    # All except gdisk are probably installed, but let's make sure.
     apt-get install gdisk rsync parted
 
 info "fs create" "Creating ${target_partition}"
@@ -117,7 +117,7 @@ info "fs id" "Getting Partition unique GUID for target filesystem"
     # the same thing).  Nevertheless, this seems to be necessary to
     # get a value that can be used in cmdline.txt.  I think it's a
     # GUID specifically for the GPT partition table entry.
-    export partition_unique_guid=`echo 'i' | sudo gdisk /dev/sda | grep 'Partition unique GUID:' | awk '{print $4}'`
+    export partition_unique_guid=`echo 'i' | sudo gdisk "${target_drive}" | grep 'Partition unique GUID:' | awk '{print $4}'`
 
 info "fs id" "Target partition UUID: ${target_partition_uuid}"
 info "fs id" "Partition unique GUID: ${partition_unique_guid}"
