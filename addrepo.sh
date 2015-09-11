@@ -47,14 +47,5 @@ else
   wget -O - -q https://apt.adafruit.com/apt.adafruit.com.gpg.key | apt-key add -
 fi
 
-# pin apt.adafruit.com origin for anything installed there:
-if [ ! -f /etc/apt/preferences.d/adafruit ]; then
-  echo "pinning apt.adafruit.com origin" 
-  echo "edit /etc/apt/preferences.d/adafruit to change"
-  echo -e "Package: *\nPin: origin \"apt.adafruit.com\"\nPin-Priority: 1001" > /etc/apt/preferences.d/adafruit
-else
-  echo "/etc/apt/preferences.d/adafruit already exists - leaving alone"
-fi
-
 # update package database
 apt-get update

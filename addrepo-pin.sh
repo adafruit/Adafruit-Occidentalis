@@ -30,8 +30,8 @@ cat << "EOF"
                                  `:hNMMMMMN.
                                     `+dMMMN`
                                        ./+-
-               occidentalis bootstrap
-                    by adafruit
+
+  adding apt.adafruit.com to /etc/apt/sources.list
 
 EOF
 
@@ -47,22 +47,14 @@ else
   wget -O - -q https://apt.adafruit.com/apt.adafruit.com.gpg.key | apt-key add -
 fi
 
-# update package database
-apt-get update
-
-# stop asking me questions
-export DEBIAN_FRONTEND=noninteractive
-
-uptodate=$(apt-show-versions occidentalis | grep uptodate)
-
-if [ "$uptodate" = "" ]; then
-  # install
-  echo "**** Installing the latest version of occidentalis ****"
-  apt-get -y install occidentalis
+# pin apt.adafruit.com origin for anything installed there:
+if [ ! -f /etc/apt/preferences.d/adafruit ]; then
+  echo "pinning apt.adafruit.com origin" 
+  echo "edit /etc/apt/preferences.d/adafruit to change"
+  echo -e "Package: *\nPin: origin \"apt.adafruit.com\"\nPin-Priority: 1001" > /etc/apt/preferences.d/adafruit
 else
-  # up to date, but rerun postinst
-  echo "**** Occidentalis is up to date. Reloading configuration ****"
-  dpkg-reconfigure -f noninteractive occidentalis
+  echo "/etc/apt/preferences.d/adafruit already exists - leaving alone"
 fi
 
-echo "BOOTSTRAP COMPLETE!!!"
+# update package database
+apt-get update
