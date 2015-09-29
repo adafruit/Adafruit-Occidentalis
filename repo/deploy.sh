@@ -22,15 +22,29 @@ cp $1/finder.sh index.txt
 chmod 644 index.txt
 
 # deploy latest install shell script
+mkdir -p /var/packages/install
 cd /var/packages/install
 rm index.txt
 cp $1/install.sh index.txt
 chmod 644 index.txt
 
 # deploy latest addrepo shell script
+mkdir -p /var/packages/add
 cd /var/packages/add
 rm index.txt
 cp $1/addrepo.sh index.txt
+chmod 644 index.txt
+
+# deploy latest install shell script
+mkdir -p /var/packages/add-pin
+cd /var/packages/add-pin
+cp $1/addrepo-pin.sh index.txt
+chmod 644 index.txt
+
+# deploy latest install shell script
+mkdir -p /var/packages/install-pin
+cd /var/packages/install-pin
+cp $1/install-pin.sh index.txt
 chmod 644 index.txt
 
 # copy the packages to a temp folder, build them:
@@ -41,9 +55,7 @@ cd $TEMP_DIR
 make
 
 # make the deb cache folder if it doesn't exist
-if [ ! -d ~/deb_cache ]; then
-  mkdir ~/deb_cache
-fi
+mkdir -p ~/deb_cache
 
 # cache the node deb
 if [ ! -f ~/deb_cache/$NODE_DEB ]; then
@@ -77,6 +89,13 @@ reprepro -V remove wheezy wiringpi
 reprepro -V remove wheezy adafruit-ap
 reprepro -V remove wheezy xinput-calibrator
 reprepro -V remove wheezy adafruit-io-gif
+reprepro -V remove wheezy raspberrypi-bootloader-adafruit-pitft
+reprepro -V remove wheezy libraspberrypi-bin-adafruit-pitft
+reprepro -V remove wheezy libraspberrypi-doc-adafruit-pitft
+reprepro -V remove wheezy libraspberrypi0-adafruit-pitft 
+reprepro -V remove wheezy libraspberrypi-dev-adafruit-pitft
+reprepro -V remove wheezy avrdude
+reprepro -V remove wheezy avrdude-doc
 
 reprepro includedeb wheezy $TEMP_DIR/build/*.deb
 
