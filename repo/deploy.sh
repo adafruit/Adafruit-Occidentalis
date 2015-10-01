@@ -2,6 +2,7 @@
 
 NODE_DEB='node_0.12.6_armhf.deb'
 IDE_DEB='adafruitwebide-0.3.10-Linux.deb'
+RUN_DATE=`date '+%Y-%m-%d-%I:%M:%S'`
 
 # make sure user passed a path to the repo
 if [ "$1" == "" ]; then
@@ -71,33 +72,29 @@ cp ~/deb_cache/*.deb $TEMP_DIR/build
 
 # sign packages, and add them to the repo
 dpkg-sig -k $GPG_KEY --sign builder $TEMP_DIR/build/*.deb
+
+# this should be our target:
+
+WHEEZY_SNAPSHOT="occidentalis-wheezy-$RUN_DATE"
+
+# add packages to an existing aptly repo - we use force-replace to overwrite
+# any existing versions.  (for all i know, this could cause problems, but i
+# don't think it has yet.)
+aptly repo add --force-replace=true occidentalis-wheezy $TEMP_DIR/build/*.deb
+aptly snapshot create $WHEEZY_SNAPSHOT from repo occidentalis-wheezy
 cd /var/packages/raspbian/
+aptly publish snapshot --distribution="wheezy" $WHEEZY_SNAPSHOT
 
-# this is a hack - TODO, investigate why these packages differ
-reprepro -V remove wheezy node
-reprepro -V remove wheezy occi
-reprepro -V remove wheezy occidentalis
-reprepro -V remove wheezy adafruitwebide
-reprepro -V remove wheezy adafruit-pitft-helper
-reprepro -V remove wheezy adafruit-pi-externalroot-helper
-reprepro -V remove wheezy libraspberrypi-dev
-reprepro -V remove wheezy libraspberrypi-doc
-reprepro -V remove wheezy libraspberrypi-bin
-reprepro -V remove wheezy libraspberrypi0
-reprepro -V remove wheezy raspberrypi-bootloader
-reprepro -V remove wheezy wiringpi
-reprepro -V remove wheezy adafruit-ap
-reprepro -V remove wheezy xinput-calibrator
-reprepro -V remove wheezy adafruit-io-gif
-reprepro -V remove wheezy raspberrypi-bootloader-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi-bin-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi-doc-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi0-adafruit-pitft 
-reprepro -V remove wheezy libraspberrypi-dev-adafruit-pitft
-reprepro -V remove wheezy avrdude
-reprepro -V remove wheezy avrdude-doc
+REPO_TEMP_DIR=`mktemp -d`
+cp -r ~/.aptly/public/ $REPO_TEMP_DIR
+rm -r /var/packages/raspbian
+mv $REPO_TEMP_DIR/public /var/packages/raspbian
+rm -r $REPO_TEMP_DIR
 
-reprepro includedeb wheezy $TEMP_DIR/build/*.deb
+# here we should:
+# 1. republish the snapshot
+# 2. copy or move snapshot to /var/packages
 
+# echo "check $TEMP_DIR"
 # clean up
 rm -r $TEMP_DIR
