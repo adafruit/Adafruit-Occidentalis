@@ -75,26 +75,31 @@ dpkg-sig -k $GPG_KEY --sign builder $TEMP_DIR/build/*.deb
 
 # this should be our target:
 
+rm -rf ~/.aptly/
+
 WHEEZY_SNAPSHOT="occidentalis-wheezy-$RUN_DATE"
+JESSIE_SNAPSHOT="occidentalis-jessie-$RUN_DATE"
 
 # add packages to an existing aptly repo - we use force-replace to overwrite
 # any existing versions.  (for all i know, this could cause problems, but i
 # don't think it has yet.)
+aptly repo create occidentalis-wheezy
+aptly repo create occidentalis-jessie
 aptly repo add --force-replace=true occidentalis-wheezy $TEMP_DIR/build/*.deb
+aptly repo add --force-replace=true occidentalis-jessie $TEMP_DIR/build/*.deb
 aptly snapshot create $WHEEZY_SNAPSHOT from repo occidentalis-wheezy
-cd /var/packages/raspbian/
+aptly snapshot create $JESSIE_SNAPSHOT from repo occidentalis-jessie
+
+# aptly publish drop wheezy
 aptly publish snapshot --distribution="wheezy" $WHEEZY_SNAPSHOT
+# aptly publish drop jessie
+aptly publish snapshot --distribution="jessie" $JESSIE_SNAPSHOT
 
 REPO_TEMP_DIR=`mktemp -d`
 cp -r ~/.aptly/public/ $REPO_TEMP_DIR
 rm -r /var/packages/raspbian
 mv $REPO_TEMP_DIR/public /var/packages/raspbian
-rm -r $REPO_TEMP_DIR
 
-# here we should:
-# 1. republish the snapshot
-# 2. copy or move snapshot to /var/packages
-
-# echo "check $TEMP_DIR"
 # clean up
 rm -r $TEMP_DIR
+rm -r $REPO_TEMP_DIR
