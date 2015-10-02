@@ -56,19 +56,19 @@ cd $TEMP_DIR
 make
 
 # make the deb cache folder if it doesn't exist
-mkdir -p ~/deb_cache
+mkdir -p ~/jessie_deb_cache
 
 # cache the node deb
-if [ ! -f ~/deb_cache/$NODE_DEB ]; then
+if [ ! -f ~/jessie_deb_cache/$NODE_DEB ]; then
   wget http://node-arm.herokuapp.com/node_latest_armhf.deb -O ~/deb_cache/$NODE_DEB
 fi
 # cache the webide deb
-if [ ! -f ~/deb_cache/$IDE_DEB ]; then
-  wget -P ~/deb_cache/ http://adafruit-download.s3.amazonaws.com/$IDE_DEB
+if [ ! -f ~/jessie_deb_cache/$IDE_DEB ]; then
+  wget -P ~/jessie_deb_cache/ http://adafruit-download.s3.amazonaws.com/$IDE_DEB
 fi
 
 # copy all of the cached debs into the build dir
-cp ~/deb_cache/*.deb $TEMP_DIR/build
+cp ~/jessie_deb_cache/*.deb $TEMP_DIR/build
 
 # sign packages, and add them to the repo
 dpkg-sig -k $GPG_KEY --sign builder $TEMP_DIR/build/*.deb
@@ -85,7 +85,10 @@ JESSIE_SNAPSHOT="occidentalis-jessie-$RUN_DATE"
 # don't think it has yet.)
 aptly repo create occidentalis-wheezy
 aptly repo create occidentalis-jessie
-aptly repo add --force-replace=true occidentalis-wheezy $TEMP_DIR/build/*.deb
+
+# wheezy_deb_cache is old stuff, we are not touching it any more
+aptly repo add --force-replace=true occidentalis-wheezy ~/wheezy_deb_cache/*.deb
+
 aptly repo add --force-replace=true occidentalis-jessie $TEMP_DIR/build/*.deb
 aptly snapshot create $WHEEZY_SNAPSHOT from repo occidentalis-wheezy
 aptly snapshot create $JESSIE_SNAPSHOT from repo occidentalis-jessie
