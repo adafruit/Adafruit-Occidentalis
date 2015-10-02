@@ -4,6 +4,13 @@ NODE_DEB='node_0.12.6_armhf.deb'
 IDE_DEB='adafruitwebide-0.3.10-Linux.deb'
 RUN_DATE=`date '+%Y-%m-%d-%I:%M:%S'`
 
+# incomplete notes:
+#   - this whole script is by now sort of a bad idea
+#   - stuff will break if there are spaces in filenames,
+#     so don't do that or fix the quoting first
+#   - we keep old snapshots for wheezy debs in ~/wheezy_deb_cache
+#     but overwrite them if there have been new ones made for jessie
+
 # make sure user passed a path to the repo
 if [ "$1" == "" ]; then
   echo "You must specify a path to your pi_bootstrap repo. i.e. /home/admin/pi_bootstrap"
@@ -85,6 +92,12 @@ JESSIE_SNAPSHOT="occidentalis-jessie-$RUN_DATE"
 # don't think it has yet.)
 aptly repo create occidentalis-wheezy
 aptly repo create occidentalis-jessie
+
+for file in `ls $TEMP_DIR/build/`; do
+  if [ -f ~/wheezy_deb_cache/"$file" ]; then
+    cp $TEMP_DIR/build/"$file" ~/wheezy_deb_cache/"$file"
+  fi
+done
 
 # wheezy_deb_cache is old stuff, we are not touching it any more
 aptly repo add --force-replace=true occidentalis-wheezy ~/wheezy_deb_cache/*.deb
