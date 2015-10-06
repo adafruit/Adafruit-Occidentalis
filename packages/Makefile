@@ -41,7 +41,7 @@ build/adafruit-pitft-helper_${PITFT_PACKAGE_VERSION}_armhf.deb: ${pitft_stuff}
 	mkdir adafruit-pitft-helper
 	cd adafruit-pitft-helper && wget https://github.com/adafruit/Adafruit-PiTFT-Helper/archive/jessie.tar.gz -O adafruit-pitft-helper_${PITFT_VERSION}.orig.tar.gz
 	cd adafruit-pitft-helper && tar xvzf adafruit-pitft-helper_${PITFT_VERSION}.orig.tar.gz
-	cd adafruit-pitft-helper && mv Adafruit-PiTFT-Helper-master adafruit-pitft-helper_${PITFT_VERSION}
+	cd adafruit-pitft-helper && mv Adafruit-PiTFT-Helper-jessie adafruit-pitft-helper_${PITFT_VERSION}
 	cp -r adafruit-pitft-helper_TEMPLATE/debian adafruit-pitft-helper/adafruit-pitft-helper_${PITFT_VERSION}/
 	cd adafruit-pitft-helper/adafruit-pitft-helper_${PITFT_VERSION} && debuild -b -aarmhf -uc -us
 	mv ./adafruit-pitft-helper/*.deb build/

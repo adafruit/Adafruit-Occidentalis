@@ -47,8 +47,6 @@ else
     echo "deb http://apt.adafruit.com/raspbian/ wheezy main" >> /etc/apt/sources.list
   fi
 
-  echo "deb http://apt.adafruit.com/raspbian/ wheezy main" >> /etc/apt/sources.list
-
   # import repo key
   wget -O - -q https://apt.adafruit.com/apt.adafruit.com.gpg.key | apt-key add -
 fi
