@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.8.0-1) unstable; urgency=low
+
+  * Handles lightdm configuration for framebuffer device.
+
+ -- Brennen Bearnes <bbearnes@gmail.com>  Thu, 01 Oct 2015 18:42:00 -0600
+
 adafruit-pitft-helper (0.7.1-1) unstable; urgency=low
 
   * Makes helper and chroot wrapper a touch more user-friendly.

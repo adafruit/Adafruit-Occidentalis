@@ -2,6 +2,14 @@
 
 NODE_DEB='node_0.12.6_armhf.deb'
 IDE_DEB='adafruitwebide-0.3.10-Linux.deb'
+RUN_DATE=`date '+%Y-%m-%d-%I:%M:%S'`
+
+# incomplete notes:
+#   - this whole script is by now sort of a bad idea
+#   - stuff will break if there are spaces in filenames,
+#     so don't do that or fix the quoting first
+#   - we keep old snapshots for wheezy debs in ~/wheezy_deb_cache
+#     but overwrite them if there have been new ones made for jessie
 
 # make sure user passed a path to the repo
 if [ "$1" == "" ]; then
@@ -55,49 +63,59 @@ cd $TEMP_DIR
 make
 
 # make the deb cache folder if it doesn't exist
-mkdir -p ~/deb_cache
+mkdir -p ~/jessie_deb_cache
 
 # cache the node deb
-if [ ! -f ~/deb_cache/$NODE_DEB ]; then
+if [ ! -f ~/jessie_deb_cache/$NODE_DEB ]; then
   wget http://node-arm.herokuapp.com/node_latest_armhf.deb -O ~/deb_cache/$NODE_DEB
 fi
 # cache the webide deb
-if [ ! -f ~/deb_cache/$IDE_DEB ]; then
-  wget -P ~/deb_cache/ http://adafruit-download.s3.amazonaws.com/$IDE_DEB
+if [ ! -f ~/jessie_deb_cache/$IDE_DEB ]; then
+  wget -P ~/jessie_deb_cache/ http://adafruit-download.s3.amazonaws.com/$IDE_DEB
 fi
 
 # copy all of the cached debs into the build dir
-cp ~/deb_cache/*.deb $TEMP_DIR/build
+cp ~/jessie_deb_cache/*.deb $TEMP_DIR/build
 
 # sign packages, and add them to the repo
 dpkg-sig -k $GPG_KEY --sign builder $TEMP_DIR/build/*.deb
-cd /var/packages/raspbian/
 
-# this is a hack - TODO, investigate why these packages differ
-reprepro -V remove wheezy node
-reprepro -V remove wheezy occi
-reprepro -V remove wheezy occidentalis
-reprepro -V remove wheezy adafruitwebide
-reprepro -V remove wheezy adafruit-pitft-helper
-reprepro -V remove wheezy adafruit-pi-externalroot-helper
-reprepro -V remove wheezy libraspberrypi-dev
-reprepro -V remove wheezy libraspberrypi-doc
-reprepro -V remove wheezy libraspberrypi-bin
-reprepro -V remove wheezy libraspberrypi0
-reprepro -V remove wheezy raspberrypi-bootloader
-reprepro -V remove wheezy wiringpi
-reprepro -V remove wheezy adafruit-ap
-reprepro -V remove wheezy xinput-calibrator
-reprepro -V remove wheezy adafruit-io-gif
-reprepro -V remove wheezy raspberrypi-bootloader-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi-bin-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi-doc-adafruit-pitft
-reprepro -V remove wheezy libraspberrypi0-adafruit-pitft 
-reprepro -V remove wheezy libraspberrypi-dev-adafruit-pitft
-reprepro -V remove wheezy avrdude
-reprepro -V remove wheezy avrdude-doc
+# this should be our target:
 
-reprepro includedeb wheezy $TEMP_DIR/build/*.deb
+rm -rf ~/.aptly/
+
+WHEEZY_SNAPSHOT="occidentalis-wheezy-$RUN_DATE"
+JESSIE_SNAPSHOT="occidentalis-jessie-$RUN_DATE"
+
+# add packages to an existing aptly repo - we use force-replace to overwrite
+# any existing versions.  (for all i know, this could cause problems, but i
+# don't think it has yet.)
+aptly repo create occidentalis-wheezy
+aptly repo create occidentalis-jessie
+
+for file in `ls $TEMP_DIR/build/`; do
+  if [ -f ~/wheezy_deb_cache/"$file" ]; then
+    cp $TEMP_DIR/build/"$file" ~/wheezy_deb_cache/"$file"
+  fi
+done
+
+# wheezy_deb_cache is old stuff, we are not touching it any more
+aptly repo add --force-replace=true occidentalis-wheezy ~/wheezy_deb_cache/*.deb
+
+aptly repo add --force-replace=true occidentalis-jessie $TEMP_DIR/build/*.deb
+aptly snapshot create $WHEEZY_SNAPSHOT from repo occidentalis-wheezy
+aptly snapshot create $JESSIE_SNAPSHOT from repo occidentalis-jessie
+
+# aptly publish drop wheezy
+aptly publish snapshot --distribution="wheezy" $WHEEZY_SNAPSHOT
+# aptly publish drop jessie
+aptly publish snapshot --distribution="jessie" $JESSIE_SNAPSHOT
+
+REPO_TEMP_DIR=`mktemp -d`
+cp -r ~/.aptly/public/ $REPO_TEMP_DIR
+rm -r /var/packages/raspbian
+mv $REPO_TEMP_DIR/public /var/packages/raspbian
 
 # clean up
 rm -r $TEMP_DIR
+rm -r $REPO_TEMP_DIR
