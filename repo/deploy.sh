@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 NODE_DEB='node_0.12.6_armhf.deb'
-IDE_DEB='adafruitwebide-0.3.10-Linux.deb'
+IDE_DEB='adafruitwebide-0.3.11-Linux.deb'
 RUN_DATE=`date '+%Y-%m-%d-%I:%M:%S'`
 
 # incomplete notes:
