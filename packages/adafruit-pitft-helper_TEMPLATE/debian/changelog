@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.8.1-1) unstable; urgency=low
+
+  * use upstream overlay for 28r and 35r
+
+ -- Todd Treece <todd@uniontownlabs.org>  Tue, 18 Oct 2016 18:40:19 -0400
+
 adafruit-pitft-helper (0.8.0-1) unstable; urgency=low
 
   * Handles lightdm configuration for framebuffer device.
