@@ -1,3 +1,9 @@
+adafruit-pitft-helper (0.8.2-1) unstable; urgency=low
+
+  * rotate 35r by 180
+
+ -- Todd Treece <todd@uniontownlabs.org>  Tue, 18 Oct 2016 21:12:23 -0400
+
 adafruit-pitft-helper (0.8.1-1) unstable; urgency=low
 
   * use upstream overlay for 28r and 35r
