@@ -1,3 +1,10 @@
+**Note:** This repository is for reference purposes only.  Adafruit no longer
+maintains the Occidentalis package set or the apt.adafruit.com package
+repository.  Please see [Raspberry-Pi-Installer-Scripts](rpi-scripts) for
+currently-supported Raspberry Pi configuration tools, including a standalone
+version of the `occi` configuration helper originally developed for this
+project.
+
 # Adafruit Occidentalis
 
 Occidentalis is a collection of packages intended for use on a Raspberry Pi
@@ -40,3 +47,4 @@ curl -SLs https://apt.adafruit.com/install | sudo bash
 
 [install.sh]: https://github.com/adafruit/Adafruit-Occidentalis/blob/master/install.sh
 [finder]: https://github.com/adafruit/Adafruit-Pi-Finder
+[rpi-scripts]: https://github.com/adafruit/Raspberry-Pi-Installer-Scripts
